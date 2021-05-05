@@ -4,15 +4,17 @@ import {
     InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
+import { AbstractRepository, EntityRepository, FindConditions, FindManyOptions } from 'typeorm';
 import { Customer } from './customer.entity';
 import { CreateCustomerInput, GetCustomersFilterInput, UpdateCustomerInput } from './customer.input';
 import { v4 as uuid } from 'uuid';
 
 @EntityRepository(Customer)
-export class CustomerRepository extends Repository<Customer> {
+export class CustomerRepository extends AbstractRepository<Customer> {
     public async getCustomerById(id: string): Promise<Customer> {
-        const found = this.findOne(id);
+        const found = this.repository.findOne({
+            where: { id },
+        });
 
         if (!found) {
             throw new BadRequestException('No customer found');
@@ -23,14 +25,18 @@ export class CustomerRepository extends Repository<Customer> {
 
     public async getCustomers(filterInput: GetCustomersFilterInput): Promise<Customer[]> {
         const { search } = filterInput;
-        const query = this.createQueryBuilder('customer');
+        let queryOptions: FindManyOptions<Customer> = {};
 
         if (search) {
-            query.andWhere('customer.name LIKE :search', { search: `%${search}%` });
+            queryOptions = {
+                where: {
+                    name: new RegExp(`^${search}`, 'i'),
+                },
+            };
         }
 
         try {
-            return query.getMany();
+            return this.repository.find(queryOptions);
         } catch (error) {
             throw new InternalServerErrorException();
         }
@@ -43,7 +49,7 @@ export class CustomerRepository extends Repository<Customer> {
             throw new ConflictException('A customer with that name already exists');
         }
 
-        const customer = this.create({
+        const customer = this.repository.create({
             id: uuid(),
             name,
             emailAddress,
@@ -51,24 +57,27 @@ export class CustomerRepository extends Repository<Customer> {
         });
 
         try {
-            await this.save(customer);
+            await this.repository.save(customer);
         } catch (error) {
+            console.log(error);
             throw new InternalServerErrorException();
         }
 
         return customer;
     }
 
-    public async updateCustomer(id: string, updateCustomerInput: UpdateCustomerInput): Promise<Customer> {
+    public async updateCustomer(updateCustomerInput: UpdateCustomerInput): Promise<Customer> {
+        const { id, ...updateInfo } = updateCustomerInput;
+
         const existingCustomer = await this.getCustomerById(id);
 
-        const customer = this.create({
+        const customer = this.repository.create({
             ...existingCustomer,
-            ...updateCustomerInput,
+            ...updateInfo,
         });
 
         try {
-            await this.save(customer);
+            await this.repository.save(customer);
         } catch (error) {
             throw new InternalServerErrorException();
         }
@@ -76,17 +85,21 @@ export class CustomerRepository extends Repository<Customer> {
         return customer;
     }
 
-    public async deleteCustomer(id: string): Promise<void> {
-        const result = await this.delete(id);
+    public async deleteCustomer(id: string): Promise<string> {
+        const result = await this.repository.delete({
+            id,
+        });
 
         if (result.affected < 1) {
             throw new NotFoundException('Customer not found');
         }
+
+        return id;
     }
 
     private async checkIfCustomerExists(name: string): Promise<boolean> {
         return (
-            (await this.count({
+            (await this.repository.count({
                 where: {
                     name,
                 },

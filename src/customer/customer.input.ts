@@ -1,4 +1,4 @@
-import { Field, InputType, PartialType } from '@nestjs/graphql';
+import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
 @InputType()
@@ -18,11 +18,15 @@ export class CreateCustomerInput {
 }
 
 @InputType()
-export class UpdateCustomerInput extends PartialType(CreateCustomerInput) {}
+export class UpdateCustomerInput extends PartialType(CreateCustomerInput) {
+    @Field(() => ID)
+    id: string;
+}
 
 @InputType()
 export class GetCustomersFilterInput {
     @IsOptional()
     @IsNotEmpty()
+    @Field({ nullable: true })
     search: string;
 }

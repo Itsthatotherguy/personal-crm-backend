@@ -1,9 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from './customer.entity';
-import { CreateCustomerInput, GetCustomersFilterInput } from './customer.input';
+import { CreateCustomerInput, GetCustomersFilterInput, UpdateCustomerInput } from './customer.input';
 import { CustomerRepository } from './customer.repository';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class CustomerService {
@@ -20,9 +19,15 @@ export class CustomerService {
         return this.customerRepository.getCustomers(filterInput);
     }
 
-    public async createCustomer(createCustomerInput: CreateCustomerInput): Promise<string> {
-        const customer = await this.customerRepository.createCustomer(createCustomerInput);
+    public async createCustomer(createCustomerInput: CreateCustomerInput): Promise<Customer> {
+        return this.customerRepository.createCustomer(createCustomerInput);
+    }
 
-        return customer.id;
+    public async updateCustomer(updateCustomerInput: UpdateCustomerInput): Promise<Customer> {
+        return this.customerRepository.updateCustomer(updateCustomerInput);
+    }
+
+    public async deleteCustomer(id: string): Promise<string> {
+        return this.customerRepository.deleteCustomer(id);
     }
 }

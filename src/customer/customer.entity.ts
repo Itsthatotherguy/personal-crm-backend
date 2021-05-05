@@ -1,18 +1,19 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Customer {
-  _id: string;
+    @ObjectIdColumn()
+    _id: string;
 
-  @PrimaryColumn()
-  id: string;
+    @PrimaryColumn()
+    id: string;
 
-  @Column()
-  name: string;
+    @Column()
+    name: string;
 
-  @Column()
-  emailAddress: string;
+    @Column()
+    emailAddress: string;
 
-  @Column()
-  phoneNumber: string;
+    @Column()
+    phoneNumber: string;
 }
