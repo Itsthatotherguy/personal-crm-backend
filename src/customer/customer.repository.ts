@@ -4,10 +4,12 @@ import {
     InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
-import { AbstractRepository, EntityRepository, FindConditions, FindManyOptions } from 'typeorm';
+import { AbstractRepository, EntityRepository, FindManyOptions } from 'typeorm';
 import { Customer } from './customer.entity';
-import { CreateCustomerInput, GetCustomersFilterInput, UpdateCustomerInput } from './customer.input';
 import { v4 as uuid } from 'uuid';
+import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @EntityRepository(Customer)
 export class CustomerRepository extends AbstractRepository<Customer> {
@@ -23,8 +25,8 @@ export class CustomerRepository extends AbstractRepository<Customer> {
         return found;
     }
 
-    public async getCustomers(filterInput: GetCustomersFilterInput): Promise<Customer[]> {
-        const { search } = filterInput;
+    public async getCustomers(filterDto: GetCustomersFilterDto): Promise<Customer[]> {
+        const { search } = filterDto;
         let queryOptions: FindManyOptions<Customer> = {};
 
         if (search) {
@@ -42,8 +44,8 @@ export class CustomerRepository extends AbstractRepository<Customer> {
         }
     }
 
-    public async createCustomer(createCustomerInput: CreateCustomerInput): Promise<Customer> {
-        const { name, emailAddress, phoneNumber } = createCustomerInput;
+    public async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+        const { name, emailAddress, phoneNumber } = createCustomerDto;
 
         if (await this.checkIfCustomerExists(name)) {
             throw new ConflictException('A customer with that name already exists');
@@ -66,14 +68,12 @@ export class CustomerRepository extends AbstractRepository<Customer> {
         return customer;
     }
 
-    public async updateCustomer(updateCustomerInput: UpdateCustomerInput): Promise<Customer> {
-        const { id, ...updateInfo } = updateCustomerInput;
-
+    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
         const existingCustomer = await this.getCustomerById(id);
 
         const customer = this.repository.create({
             ...existingCustomer,
-            ...updateInfo,
+            ...updateCustomerDto,
         });
 
         try {

@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from './customer.entity';
-import { CreateCustomerInput, GetCustomersFilterInput, UpdateCustomerInput } from './customer.input';
 import { CustomerRepository } from './customer.repository';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -15,16 +17,16 @@ export class CustomerService {
         return this.customerRepository.getCustomerById(id);
     }
 
-    public async getCustomers(filterInput: GetCustomersFilterInput): Promise<Customer[]> {
-        return this.customerRepository.getCustomers(filterInput);
+    public async getCustomers(filterDto: GetCustomersFilterDto): Promise<Customer[]> {
+        return this.customerRepository.getCustomers(filterDto);
     }
 
-    public async createCustomer(createCustomerInput: CreateCustomerInput): Promise<Customer> {
-        return this.customerRepository.createCustomer(createCustomerInput);
+    public async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+        return this.customerRepository.createCustomer(createCustomerDto);
     }
 
-    public async updateCustomer(updateCustomerInput: UpdateCustomerInput): Promise<Customer> {
-        return this.customerRepository.updateCustomer(updateCustomerInput);
+    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
+        return this.customerRepository.updateCustomer(id, updateCustomerDto);
     }
 
     public async deleteCustomer(id: string): Promise<string> {

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import GraphqlModule from './config/graphql.module';
 import TypeOrmModule from './config/typeorm.module';
 import { CustomerModule } from './customer/customer.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-    imports: [GraphqlModule, TypeOrmModule, CustomerModule],
+    imports: [TypeOrmModule, CustomerModule, AuthModule],
     controllers: [],
     providers: [],
 })
