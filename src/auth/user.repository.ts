@@ -7,7 +7,7 @@ import { LoginDto } from './dto/login.dto';
 
 @EntityRepository(User)
 export class UserRepository extends AbstractRepository<User> {
-    async signup(signupDto: SignupDto): Promise<void> {
+    async signup(signupDto: SignupDto): Promise<User> {
         const { name, emailAddress, password } = signupDto;
 
         const salt = await bcrypt.genSalt();
@@ -25,6 +25,8 @@ export class UserRepository extends AbstractRepository<User> {
         } catch (error) {
             console.log(error);
         }
+
+        return user;
     }
 
     async findUserByEmail(emailAddress: string): Promise<User> {

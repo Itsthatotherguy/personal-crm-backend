@@ -19,7 +19,7 @@ import { CreateCustomerDto } from './dto/create-customer.dto';
 import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 
-@Controller('customer')
+@Controller('customers')
 @UseGuards(AuthGuard())
 export class CustomerController {
     constructor(private customerService: CustomerService) {}
