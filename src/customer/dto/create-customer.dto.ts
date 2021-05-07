@@ -1,13 +1,14 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { CustomerErrors } from '../customer.errors';
 
 export class CreateCustomerDto {
-    @IsNotEmpty({ message: 'INVALID_NAME' })
+    @IsNotEmpty({ message: CustomerErrors.EMPTY_NAME })
     name: string;
 
-    @IsNotEmpty({ message: 'INVALID_EMAIL' })
-    @IsEmail({}, { message: 'INVALID_EMAIL' })
+    @IsNotEmpty({ message: CustomerErrors.EMPTY_EMAIL })
+    @IsEmail({}, { message: CustomerErrors.INVALID_EMAIL })
     emailAddress: string;
 
-    @IsNotEmpty({ message: 'INVALID_PHONE_NUMBER' })
+    @IsNotEmpty({ message: CustomerErrors.EMPTY_PHONE_NUMBER })
     phoneNumber: string;
 }

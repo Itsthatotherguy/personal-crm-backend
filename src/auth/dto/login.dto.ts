@@ -1,11 +1,10 @@
-import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { AuthErrors } from '../auth.errors';
 
 export class LoginDto {
-    @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: AuthErrors.EMPTY_EMAIL })
     emailAddress: string;
 
-    @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: AuthErrors.EMPTY_PASSWORD })
     password: string;
 }

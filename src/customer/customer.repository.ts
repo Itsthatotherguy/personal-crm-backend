@@ -16,7 +16,7 @@ import { User } from 'src/auth/user.entity';
 @EntityRepository(Customer)
 export class CustomerRepository extends AbstractRepository<Customer> {
     public async getCustomerById(id: string, user: User): Promise<Customer> {
-        const found = this.repository.findOne({
+        const found = await this.repository.findOne({
             where: { id, userId: user.id },
         });
 
@@ -66,13 +66,15 @@ export class CustomerRepository extends AbstractRepository<Customer> {
             throw new InternalServerErrorException();
         }
 
+        delete customer.user;
+
         return customer;
     }
 
     public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto, user: User): Promise<Customer> {
         const existingCustomer = await this.getCustomerById(id, user);
 
-        if (this.checkIfCustomerNameExistsIfDifferent(existingCustomer, updateCustomerDto)) {
+        if (await this.checkIfCustomerNameExistsIfDifferent(existingCustomer, updateCustomerDto)) {
             throw new ConflictException(CustomerErrors.DUPLICATE_NAME);
         }
 

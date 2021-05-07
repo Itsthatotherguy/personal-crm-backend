@@ -12,8 +12,8 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/auth/user.entity';
 import { Customer } from './customer.entity';
 import { CustomerService } from './customer.service';
@@ -22,7 +22,7 @@ import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @Controller('customers')
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 export class CustomerController {
     constructor(private customerService: CustomerService) {}
 
