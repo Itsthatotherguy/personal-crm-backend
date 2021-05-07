@@ -6,6 +6,7 @@ import { SignupDto } from './dto/signup.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { AuthResponse } from './auth-response.interface';
 import { UserRepository } from './user.repository';
+import { AuthErrors } from './auth.errors';
 
 @Injectable()
 export class AuthService {
@@ -25,16 +26,8 @@ export class AuthService {
         const emailAddress = await this.userRepository.validateUserPassword(loginDto);
 
         if (!emailAddress) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException(AuthErrors.INVALID_CREDENTIALS);
         }
-
-        // const payload: JwtPayload = { emailAddress };
-        // const accessToken = await this.jwtService.signAsync(payload);
-
-        // return {
-        //     accessToken,
-        //     expiresIn: 3600,
-        // };
 
         return this.handleAuthentication(emailAddress);
     }
@@ -45,7 +38,7 @@ export class AuthService {
 
         return {
             accessToken,
-            expiresIn: 10,
+            expiresIn: 3600,
         };
     }
 }

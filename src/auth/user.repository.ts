@@ -4,6 +4,8 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
 import { LoginDto } from './dto/login.dto';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { AuthErrors } from './auth.errors';
 
 @EntityRepository(User)
 export class UserRepository extends AbstractRepository<User> {
@@ -23,7 +25,11 @@ export class UserRepository extends AbstractRepository<User> {
         try {
             await this.repository.save(user);
         } catch (error) {
-            console.log(error);
+            if (error.code === '23505') {
+                throw new ConflictException(AuthErrors.DUPLICATE_EMAIL);
+            } else {
+                throw new InternalServerErrorException();
+            }
         }
 
         return user;

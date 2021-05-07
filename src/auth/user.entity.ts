@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { Customer } from 'src/customer/customer.entity';
 
 @Entity()
 @Unique(['emailAddress'])
@@ -18,6 +19,9 @@ export class User {
 
     @Column()
     salt: string;
+
+    @OneToMany((type) => Customer, (customer) => customer.user, { eager: true })
+    customers: Customer[];
 
     async validatePassword(password: string): Promise<boolean> {
         const hash = await bcrypt.hash(password, this.salt);

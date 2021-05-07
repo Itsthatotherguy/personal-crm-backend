@@ -10,45 +10,45 @@ import { v4 as uuid } from 'uuid';
 import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CustomerErrors } from './customer.errors';
+import { User } from 'src/auth/user.entity';
 
 @EntityRepository(Customer)
 export class CustomerRepository extends AbstractRepository<Customer> {
-    public async getCustomerById(id: string): Promise<Customer> {
+    public async getCustomerById(id: string, user: User): Promise<Customer> {
         const found = this.repository.findOne({
-            where: { id },
+            where: { id, userId: user.id },
         });
 
         if (!found) {
-            throw new BadRequestException('No customer found');
+            throw new NotFoundException(CustomerErrors.CUSTOMER_NOT_FOUND);
         }
 
         return found;
     }
 
-    public async getCustomers(filterDto: GetCustomersFilterDto): Promise<Customer[]> {
+    public async getCustomers(filterDto: GetCustomersFilterDto, user: User): Promise<Customer[]> {
         const { search } = filterDto;
-        let queryOptions: FindManyOptions<Customer> = {};
+        const query = this.repository.createQueryBuilder('customer');
+
+        query.where('customer.userId = :userId', { userId: user.id });
 
         if (search) {
-            queryOptions = {
-                where: {
-                    name: new RegExp(`^${search}`, 'i'),
-                },
-            };
+            query.andWhere('customer.name LIKE :search', { search: '%search%' });
         }
 
         try {
-            return this.repository.find(queryOptions);
+            return query.getMany();
         } catch (error) {
             throw new InternalServerErrorException();
         }
     }
 
-    public async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+    public async createCustomer(createCustomerDto: CreateCustomerDto, user: User): Promise<Customer> {
         const { name, emailAddress, phoneNumber } = createCustomerDto;
 
         if (await this.checkIfCustomerExists(name)) {
-            throw new ConflictException('A customer with that name already exists');
+            throw new ConflictException(CustomerErrors.DUPLICATE_NAME);
         }
 
         const customer = this.repository.create({
@@ -56,6 +56,7 @@ export class CustomerRepository extends AbstractRepository<Customer> {
             name,
             emailAddress,
             phoneNumber,
+            user,
         });
 
         try {
@@ -68,8 +69,12 @@ export class CustomerRepository extends AbstractRepository<Customer> {
         return customer;
     }
 
-    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
-        const existingCustomer = await this.getCustomerById(id);
+    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto, user: User): Promise<Customer> {
+        const existingCustomer = await this.getCustomerById(id, user);
+
+        if (this.checkIfCustomerNameExistsIfDifferent(existingCustomer, updateCustomerDto)) {
+            throw new ConflictException(CustomerErrors.DUPLICATE_NAME);
+        }
 
         const customer = this.repository.create({
             ...existingCustomer,
@@ -85,16 +90,28 @@ export class CustomerRepository extends AbstractRepository<Customer> {
         return customer;
     }
 
-    public async deleteCustomer(id: string): Promise<string> {
+    public async deleteCustomer(id: string, user: User): Promise<string> {
         const result = await this.repository.delete({
             id,
+            userId: user.id,
         });
 
         if (result.affected < 1) {
-            throw new NotFoundException('Customer not found');
+            throw new NotFoundException(CustomerErrors.CUSTOMER_NOT_FOUND);
         }
 
         return id;
+    }
+
+    private async checkIfCustomerNameExistsIfDifferent(
+        existingCustomer: Customer,
+        updateCustomerDto: UpdateCustomerDto,
+    ): Promise<boolean> {
+        if (!updateCustomerDto.name || existingCustomer.name === updateCustomerDto.name) {
+            return false;
+        }
+
+        return this.checkIfCustomerExists(updateCustomerDto.name);
     }
 
     private async checkIfCustomerExists(name: string): Promise<boolean> {

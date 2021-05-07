@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { Customer } from './customer.entity';
 import { CustomerRepository } from './customer.repository';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -13,23 +14,23 @@ export class CustomerService {
         private customerRepository: CustomerRepository,
     ) {}
 
-    public async getCustomerById(id: string): Promise<Customer> {
-        return this.customerRepository.getCustomerById(id);
+    public async getCustomerById(id: string, user: User): Promise<Customer> {
+        return this.customerRepository.getCustomerById(id, user);
     }
 
-    public async getCustomers(filterDto: GetCustomersFilterDto): Promise<Customer[]> {
-        return this.customerRepository.getCustomers(filterDto);
+    public async getCustomers(filterDto: GetCustomersFilterDto, user: User): Promise<Customer[]> {
+        return this.customerRepository.getCustomers(filterDto, user);
     }
 
-    public async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-        return this.customerRepository.createCustomer(createCustomerDto);
+    public async createCustomer(createCustomerDto: CreateCustomerDto, user: User): Promise<Customer> {
+        return this.customerRepository.createCustomer(createCustomerDto, user);
     }
 
-    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
-        return this.customerRepository.updateCustomer(id, updateCustomerDto);
+    public async updateCustomer(id: string, updateCustomerDto: UpdateCustomerDto, user: User): Promise<Customer> {
+        return this.customerRepository.updateCustomer(id, updateCustomerDto, user);
     }
 
-    public async deleteCustomer(id: string): Promise<string> {
-        return this.customerRepository.deleteCustomer(id);
+    public async deleteCustomer(id: string, user: User): Promise<string> {
+        return this.customerRepository.deleteCustomer(id, user);
     }
 }
