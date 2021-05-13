@@ -1,8 +1,11 @@
 import { JwtModule } from '@nestjs/jwt';
+import * as config from 'config';
+
+const jwtConfig: any = config.get('jwt');
 
 export default JwtModule.register({
-    secret: 'secret51',
+    secret: process.env.JWT_SECRET || jwtConfig.secret,
     signOptions: {
-        expiresIn: 3600,
+        expiresIn: jwtConfig.expiresIn,
     },
 });

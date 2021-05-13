@@ -1,0 +1,5 @@
+server:
+   origin: '...soon'
+
+db:
+   synchronize: false
