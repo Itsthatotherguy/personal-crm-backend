@@ -35,3 +35,7 @@ lerna-debug.log*
 
 # zip files
 *.zip
+app.zip
+
+# password file
+passwords.txt
