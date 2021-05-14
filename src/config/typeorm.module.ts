@@ -1,9 +1,9 @@
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as config from 'config';
 
 const dbConfig: any = config.get('db');
 
-export default TypeOrmModule.forRoot({
+export const typeOrmConfigOptions: TypeOrmModuleOptions = {
     type: dbConfig.type,
     host: process.env.RDS_HOSTNAME || dbConfig.host,
     port: process.env.RDS_PORT || dbConfig.port,
@@ -12,4 +12,4 @@ export default TypeOrmModule.forRoot({
     database: process.env.RDS_DB_NAME || dbConfig.database,
     autoLoadEntities: true,
     synchronize: process.env.TYPEORM_SYNC || dbConfig.synchronize,
-});
+};

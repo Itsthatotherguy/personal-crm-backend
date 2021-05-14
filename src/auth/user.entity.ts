@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { Customer } from 'src/customer/customer.entity';
+import { Customer } from '../customer/customer.entity';
 
 @Entity()
 @Unique(['emailAddress'])

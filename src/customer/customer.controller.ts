@@ -12,9 +12,9 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { User } from 'src/auth/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { User } from '../auth/user.entity';
 import { Customer } from './customer.entity';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';

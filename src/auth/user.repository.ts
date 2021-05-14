@@ -44,7 +44,7 @@ export class UserRepository extends AbstractRepository<User> {
 
         const user = await this.findUserByEmail(emailAddress);
 
-        if (user && user.validatePassword(password)) {
+        if (user && (await user.validatePassword(password))) {
             return user.emailAddress;
         } else {
             return null;

@@ -1,5 +1,5 @@
-import { PassportModule } from '@nestjs/passport';
+import { IAuthModuleOptions } from '@nestjs/passport';
 
-export default PassportModule.register({
+export const passportConfigOptions: IAuthModuleOptions<any> = {
     defaultStrategy: 'jwt',
-});
+};

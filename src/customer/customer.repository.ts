@@ -11,7 +11,7 @@ import { GetCustomersFilterDto } from './dto/get-customers-filter.dto';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CustomerErrors } from './customer.errors';
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 
 @EntityRepository(Customer)
 export class CustomerRepository extends AbstractRepository<Customer> {

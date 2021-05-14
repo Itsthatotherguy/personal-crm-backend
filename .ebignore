@@ -1,0 +1,16 @@
+.gitignore
+
+/node_modules/**/*
+/dist/**/*
+/test/**/*
+**/*.spec.*
+
+passwords.txt
+rootKey.csv
+
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.elasticbeanstalk/logs/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
