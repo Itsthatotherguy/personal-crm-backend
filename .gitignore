@@ -39,6 +39,7 @@ app.zip
 
 # password file
 passwords.txt
+rootKey.csv
 
 
 # Elastic Beanstalk Files
